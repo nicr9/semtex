@@ -7,7 +7,7 @@ import os, commands, sys
 from PyQt4 import QtGui # TODO: Reduce scope of imports
 
 # Misc
-icon_path = '' # TODO: Make icon, specify path
+logo_path = 'logo.png'
 
 class Semtex(QtGui.QWidget):
 
@@ -26,7 +26,7 @@ class Semtex(QtGui.QWidget):
         # --- Set Up Window ---
         self.setGeometry(300, 300, 250, 150)
         self.setWindowTitle('SemTeX: Equations Made using laTEX')
-        #self.setWindowIcon(QtGui.QIcon(icon_path)) TODO: Enable this later
+        self.setWindowIcon(QtGui.QIcon(logo_path)) # TODO: Test this later
 
         # --- TextEdits ---
         self.teInput = QtGui.QTextEdit()
@@ -35,6 +35,11 @@ class Semtex(QtGui.QWidget):
         # --- Create Button ---
         bRefresh = QtGui.QPushButton('Refresh')
         bRefresh.clicked.connect(self.refresh)
+
+        # --- Create Label ---
+        self.lEquation = QtGui.QLabel(self)
+        self.lEquation.setPixmap(QtGui.QPixmap(logo_path))
+        self.lEquation.setGeometry(160, 40, 80, 30)
 
         # --- Sort Layout ---
         vbox = QtGui.QVBoxLayout()
@@ -45,7 +50,7 @@ class Semtex(QtGui.QWidget):
         hbox = QtGui.QHBoxLayout()
         hbox.addStretch(1)
         hbox.addLayout(vbox)
-        # TODO: Add Imageview
+        hbox.addWidget(self.lEquation)
         
         self.setLayout(hbox)
 
@@ -59,7 +64,7 @@ class Semtex(QtGui.QWidget):
         self.compileLatex()
         self.convertPng()
         self.cleanUp()
-        
+        self.displayPng()
         
     def loadHistory(self):
         """
@@ -160,6 +165,13 @@ class Semtex(QtGui.QWidget):
             for row in file_list:
                 os.remove(row)
 
+    def displayPng(self):
+        """
+        Show image
+        """
+        # TODO: Set to logo for when there is no equation
+        self.lEquation.setPixmap(QtGui.QPixmap('temp.png'))
+        
 #    # Save History
 #    try:
 #        while '\n' in hist:
