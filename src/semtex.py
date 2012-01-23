@@ -13,6 +13,8 @@ class Semtex(QtGui.QWidget):
 
     # Misc Variables
     hist = [] # Buffer for recent history of commands
+    hist_len = 5 # max length of buffer
+    welcome_message = "Welcome to SemTeX, please enter your equation here"
     
     def __init__(self):
         super(Semtex, self).__init__()
@@ -24,9 +26,9 @@ class Semtex(QtGui.QWidget):
         
     def initUi(self):
         # --- Set Up Window ---
-        self.setGeometry(300, 300, 250, 150)
+        self.setGeometry(300, 300, 350, 150)
         self.setWindowTitle('SemTeX: Equations Made using laTEX')
-        self.setWindowIcon(QtGui.QIcon(logo_path)) # TODO: Test this later
+        self.setWindowIcon(QtGui.QIcon(logo_path))
 
         # --- TextEdits ---
         self.teInput = QtGui.QTextEdit()
@@ -35,17 +37,20 @@ class Semtex(QtGui.QWidget):
         # --- Create Button ---
         bRefresh = QtGui.QPushButton('Refresh')
         bRefresh.clicked.connect(self.refresh)
+        
+        bSave = QtGui.QPushButton('Save')
+        bSave.clicked.connect(self.save)
 
         # --- Create Label ---
         self.lEquation = QtGui.QLabel(self)
         self.lEquation.setPixmap(QtGui.QPixmap(logo_path))
-        self.lEquation.setGeometry(160, 40, 80, 30)
 
         # --- Sort Layout ---
         vbox = QtGui.QVBoxLayout()
         vbox.addStretch(1)
         vbox.addWidget(self.teInput)
         vbox.addWidget(bRefresh)
+        vbox.addWidget(bSave)
         
         hbox = QtGui.QHBoxLayout()
         hbox.addStretch(1)
@@ -60,26 +65,39 @@ class Semtex(QtGui.QWidget):
         """
         Takes the equation from the TextEdit, compiles and converts to PNG
         """
-        self.generateLatex()
-        self.compileLatex()
-        self.convertPng()
-        self.cleanUp()
-        self.displayPng()
+        eq = self.getInput()
+        if eq != None:
+            self.generateLatex(eq)
+            self.compileLatex()
+            self.convertPng()
+            self.cleanUp()
+            self.displayPng()
+        else:
+            self.lEquation.setPixmap(QtGui.QPixmap(logo_path))
         
+
+    def displayHistory(self):
+        """
+        Display previously saved equations in terminal
+        """
+        print 'Previous equations:'
+        for row in self.hist:
+            print '\t', row.strip()
+
     def loadHistory(self):
         """
         Get last 5 entries in history, print to terminal
         """
         try:
-            # Check For History, Create History
+            # Check for history file or create history file
             hist_file = file('.hist','r')
-        
-            # Display Previous Equations in terminal
-            print 'Previous equations:'
-        
+            
+            # Load history from file
+            self.hist = []
             for row in hist_file:
                 self.hist.append(row.strip())
-                print '\t',row.strip()
+        
+            self.displayHistory()
         except IOError, e:
             print 'Error - accessing history'
             print 'Details -', e
@@ -90,9 +108,20 @@ class Semtex(QtGui.QWidget):
         """
         Check last entry in history, insert into teInput
         """
-        self.teInput.setText(self.hist[-1])
+        if self.hist != []:
+            self.teInput.setText(self.hist[-1])
+        else:
+            self.teInput.setText(self.welcome_message)
         
-    def generateLatex(self):
+
+    def getInput(self):
+        inp = self.teInput.toPlainText()
+        if inp != self.welcome_message and inp != '':
+            return inp
+        else:
+            return None
+
+    def generateLatex(self, inp):
         """
         Generate LaTeX File
         """
@@ -101,11 +130,11 @@ class Semtex(QtGui.QWidget):
             eq_start = file('.start','r')
             eq_end = file('.end','r')
             
-            eq = eq_start.read() + self.teInput.toPlainText() + eq_end.read()
+            eq = eq_start.read() + inp + eq_end.read()
             
             temp = file('temp.tex','w')
             temp.write(eq)
-        except Exception, e:
+        except IOError, e:
             print 'Error - creating .tex file'
             print 'Details -', e
         finally:
@@ -118,7 +147,6 @@ class Semtex(QtGui.QWidget):
         Use LaTeX to compile .tex file
         """
         # TODO: Suppress output?
-        # Compile LaTeX
         try:
             os.system('latex temp.tex')
         except Exception, e:
@@ -152,7 +180,6 @@ class Semtex(QtGui.QWidget):
             print 'Details -', e
             quit()
     
-    # Clean up
     def cleanUp(self):
         """
         Get rid of unneccessary files
@@ -160,36 +187,47 @@ class Semtex(QtGui.QWidget):
         file_list = commands.getoutput('ls temp.*')
         if file_list != 'ls: cannot access temp.*: No such file or directory': # TODO: Find a cleaner way
             file_list = file_list.split('\n')
+            
             png = file_list.index('temp.png')
             file_list.pop(png) # We don't want to remove the image
+            
             for row in file_list:
                 os.remove(row)
 
     def displayPng(self):
         """
-        Show image
+        Show equation as an image.
         """
-        # TODO: Set to logo for when there is no equation
         self.lEquation.setPixmap(QtGui.QPixmap('temp.png'))
         
-#    # Save History
-#    try:
-#        while '\n' in hist:
-#            i = hist.index('\n')
-#            hist.pop(i)
-#        hist = [z+'\n' for z in hist[-hist_len:]] # Last five entries only, add endl to each
-#        hist_file = file('.hist','w')
-#        for row in hist:
-#            hist_file.write(row)
-#    except IOError, e:
-#        print e
-#    finally:
-#        hist_file.close()
-#        quit()
+    def save(self):
+        try:
+            # Add contents of textEdit to history
+            self.hist.append(str(self.getInput()))
+            
+            # Remove 'endl's from history
+            while '\n' in self.hist:
+                i = self.hist.index('\n')
+                self.hist.pop(i)
+            
+            # Last five entries only, add endl to each
+            hist = [z+'\n' for z in self.hist[-self.hist_len:]]
+            
+            # Open history, update
+            hist_file = file('.hist','w')
+            for row in hist:
+                hist_file.write(row)
+                
+            # Print new history to terminal
+            self.displayHistory()
+        except IOError, e:
+            print e
+        finally:
+            hist_file.close()
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    root = Semtex()
+    root = Semtex() #@UnusedVariable
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
