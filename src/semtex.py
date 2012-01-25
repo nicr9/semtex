@@ -4,7 +4,7 @@ Created on 20 Jan 2012
 @author: nic
 '''
 import os, commands, sys
-from PyQt4 import QtGui # TODO: Reduce scope of imports
+from PyQt4 import QtGui, QtCore # TODO: Reduce scope of imports
 
 # Misc
 logo_path = 'logo.png'
@@ -16,13 +16,15 @@ class Semtex(QtGui.QWidget):
     hist_len = 5 # max length of buffer
     welcome_message = "Welcome to SemTeX, please enter your equation here"
     
-    def __init__(self):
+    def __init__(self, clipboard):
         super(Semtex, self).__init__()
     
         self.initUi()
         self.checkDependancies()
         self.loadHistory()
         self.setLast()
+        
+        self.clip = clipboard
         
     def initUi(self):
         # --- Set Up Window ---
@@ -41,9 +43,11 @@ class Semtex(QtGui.QWidget):
         bSave = QtGui.QPushButton('Save')
         bSave.clicked.connect(self.save)
 
-        # --- Create Label ---
-        self.lEquation = QtGui.QLabel(self)
-        self.lEquation.setPixmap(QtGui.QPixmap(logo_path))
+        # --- Create Image Button ---
+        self.lEquation = QtGui.QPushButton(self)
+        self.displayPng(logo_path)
+        self.lEquation.clicked.connect(self.copyToClipboard)
+        #self.lEquation.setPixmap(QtGui.QPixmap(logo_path))
 
         # --- Sort Layout ---
         vbox = QtGui.QVBoxLayout()
@@ -71,9 +75,9 @@ class Semtex(QtGui.QWidget):
             self.compileLatex()
             self.convertPng()
             self.cleanUp()
-            self.displayPng()
+            self.displayPng('temp.png')
         else:
-            self.lEquation.setPixmap(QtGui.QPixmap(logo_path))
+            self.displayPng(logo_path)
         
 
     def displayHistory(self):
@@ -194,11 +198,13 @@ class Semtex(QtGui.QWidget):
             for row in file_list:
                 os.remove(row)
 
-    def displayPng(self):
+    def displayPng(self, icon):
         """
         Show equation as an image.
         """
-        self.lEquation.setPixmap(QtGui.QPixmap('temp.png'))
+        icon = QtGui.QIcon(icon)
+        self.lEquation.setIcon(icon)
+        self.lEquation.setIconSize(QtCore.QSize(100,100))
         
     def save(self):
         try:
@@ -224,10 +230,18 @@ class Semtex(QtGui.QWidget):
             print e
         finally:
             hist_file.close()
+    
+    def copyToClipboard(self):
+        """
+        Copies the image 'temp.png' to the clipboard.
+        """
+        # TODO Do something else if no equation
+        self.clip.setPixmap(QtGui.QPixmap('temp.png'), mode = self.clip.Clipboard)
+        print 'Copied to clipboard'
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    root = Semtex() #@UnusedVariable
+    root = Semtex(app.clipboard()) #@UnusedVariable
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
