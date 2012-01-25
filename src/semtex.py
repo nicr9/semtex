@@ -22,7 +22,7 @@ class Semtex(QtGui.QWidget):
         self.initUi()
         self.checkDependancies()
         self.loadHistory()
-        self.setLast()
+        self.setFromHist(-1)
         
         self.clip = clipboard
         
@@ -45,7 +45,7 @@ class Semtex(QtGui.QWidget):
 
         # --- Create Image Button ---
         self.lEquation = QtGui.QPushButton(self)
-        self.displayPng(logo_path)
+        self.displayPng()
         self.lEquation.clicked.connect(self.copyToClipboard)
         #self.lEquation.setPixmap(QtGui.QPixmap(logo_path))
 
@@ -75,10 +75,9 @@ class Semtex(QtGui.QWidget):
             self.compileLatex()
             self.convertPng()
             self.cleanUp()
-            self.displayPng('temp.png')
+            self.displayPng()
         else:
-            self.displayPng(logo_path)
-        
+            self.displayPng()
 
     def displayHistory(self):
         """
@@ -108,16 +107,16 @@ class Semtex(QtGui.QWidget):
         finally:
             hist_file.close()
 
-    def setLast(self):
+    def setFromHist(self, index):
         """
         Check last entry in history, insert into teInput
         """
-        if self.hist != []:
-            self.teInput.setText(self.hist[-1])
-        else:
-            self.teInput.setText(self.welcome_message)
-        
-
+        if index >= self.hist_len and index < 0:
+            if self.hist != []:
+                self.teInput.setText(self.hist[index])
+            else:
+                self.teInput.setText(self.welcome_message)
+    
     def getInput(self):
         inp = self.teInput.toPlainText()
         if inp != self.welcome_message and inp != '':
@@ -163,7 +162,7 @@ class Semtex(QtGui.QWidget):
         """
         # TODO: Suppress output?
         try:
-            os.system('dvipng -T tight -x 1200 -z 9 -bg transparent -o temp.png temp.dvi')
+            os.system('dvipng -T tight -x 1200 -z 9 -bg rgb 1.0 1.0 1.0 -o temp.png temp.dvi')
         except Exception, e:
             print 'Error - converting to png'
             print 'Details -', e
@@ -198,11 +197,16 @@ class Semtex(QtGui.QWidget):
             for row in file_list:
                 os.remove(row)
 
-    def displayPng(self, icon):
+    def displayPng(self):
         """
-        Show equation as an image.
+        Show equation as an image. Show logo if no equation
         """
-        icon = QtGui.QIcon(icon)
+        eq = self.getInput()
+        icon = None
+        if eq != None:
+            icon = QtGui.QIcon('temp.png')
+        else:
+            icon = QtGui.QIcon(logo_path)
         self.lEquation.setIcon(icon)
         self.lEquation.setIconSize(QtCore.QSize(100,100))
         
