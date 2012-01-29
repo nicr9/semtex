@@ -4,10 +4,12 @@ Created on 20 Jan 2012
 @author: nic
 '''
 import os, commands, sys
+from subprocess import call
 from PyQt4 import QtGui, QtCore # TODO: Reduce scope of imports
 
 # Misc
 logo_path = 'logo.png'
+outp_path = '.outp'
 
 class Semtex(QtGui.QWidget):
 
@@ -171,25 +173,28 @@ class Semtex(QtGui.QWidget):
         """
         Check For Resources: dvipng, latex
         """
+        outp_file = open(outp_path,'w')
         try:
-            latex_check = commands.getoutput('which latex')
-            dvipng_check = commands.getoutput('which dvipng')
+            latex_check = call(['which', 'latex'], stdout = outp_file)
+            dvipng_check = call(['which', 'dvipng'], stdout = outp_file)
     
-            if latex_check == '' or dvipng_check == '':
+            if latex_check or dvipng_check:
                 message = ''
                 
                 # Create exception message specifying the missing utility
-                if latex_check == '' and dvipng_check == '':
-                    message = 'Missing resources, please make sure you have latex and dvipng installed'
+                if latex_check and dvipng_check:
+                    message = 'Please make sure you have latex and dvipng installed'
                 else:
                     missing_resource = 'latex' if latex_check == '' else 'dvipng'
-                    message = 'Missing resources, command line utility % is not installed' % missing_resource
+                    message = 'Command line utility % could not be found' % missing_resource
                     
                 raise Exception(message)
         except Exception, e:
             print 'Error - failed search for resources'
             print 'Details -', e
             quit()
+        finally:
+            outp_file.close()
     
     def cleanUp(self):
         """
