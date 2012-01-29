@@ -3,9 +3,9 @@ Created on 20 Jan 2012
 
 @author: nic
 '''
-import os, sys
+import os, sys, shlex
 import subprocess as sp
-from PyQt4 import QtGui, QtCore # TODO: Reduce scope of imports
+from PyQt4 import QtGui, QtCore
 
 # Misc
 logo_path = 'logo.png'
@@ -151,32 +151,56 @@ class Semtex(QtGui.QWidget):
         """
         Use LaTeX to compile .tex file
         """
-        # TODO: Suppress output?
+        outp_file = None
         try:
-            os.system('latex temp.tex')
+            outp_file = open(outp_path,'w')
+            cmd = 'latex temp.tex'
+            
+            x = sp.call(shlex.split(cmd), stdout = outp_file)
+            
+            if x:
+                raise Exception('compileLatex - subprocess call failed')
         except Exception, e:
             print 'Error - compiling .tex file'
-            print 'Details -', e
+            raise e
+        except sp.CalledProcessError, e:
+            raise e
+        finally:
+            outp_file.close()
             
     def convertPng(self):
         """
         Converts dvi file created by latex to png
         """
-        # TODO: Suppress output?
+        outp_file = None
         try:
-            os.system('dvipng -T tight -x 1200 -z 9 -bg rgb 1.0 1.0 1.0 -o temp.png temp.dvi')
+            outp_file = open(outp_path,'w')
+            cmd = 'dvipng -T tight -x 1200 -z 9 -bg rgb 1.0 1.0 1.0 -o temp.png temp.dvi'
+            
+            x = sp.call(shlex.split(cmd), stdout = outp_file)
+            
+            if x:
+                raise Exception('convertPng - subprocess call failed')
         except Exception, e:
             print 'Error - converting to png'
-            print 'Details -', e
+            raise e
+        except sp.CalledProcessError, e:
+            raise e
+        finally:
+            outp_file.close()
             
     def checkDependancies(self):
         """
         Check For Resources: dvipng, latex
         """
-        outp_file = open(outp_path,'w')
+        outp_file = None
         try:
-            latex_check = sp.call(['which', 'latex'], stdout = outp_file)
-            dvipng_check = sp.call(['which', 'dvipng'], stdout = outp_file)
+            outp_file = open(outp_path,'w')
+            cmd_latex = 'which latex'
+            cmd_dvipng = 'which dvipng'
+            
+            latex_check = sp.call(shlex.split(cmd_latex), stdout = outp_file)
+            dvipng_check = sp.call(shlex.split(cmd_dvipng), stdout = outp_file)
     
             if latex_check or dvipng_check:
                 message = ''
@@ -200,8 +224,10 @@ class Semtex(QtGui.QWidget):
         """
         Get rid of unnecessary files
         """
-        outp_file = open(outp_path,'w')
+        outp_file = None
         try:
+            outp_file = open(outp_path,'w')
+            
             file_list = sp.check_output('ls temp.*', shell = True, stdout = outp_file)
             file_list = file_list.strip().split('\n')
             
