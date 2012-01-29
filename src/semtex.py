@@ -175,9 +175,17 @@ class Semtex(QtGui.QWidget):
             latex_check = commands.getoutput('which latex')
             dvipng_check = commands.getoutput('which dvipng')
     
-            if (latex_check == '' or dvipng_check == ''):
-                print 'Missing resources, please make sure you have latex and dvipng installed'
-                quit() # TODO: change to throwing an exception
+            if latex_check == '' or dvipng_check == '':
+                message = ''
+                
+                # Create exception message specifying the missing utility
+                if latex_check == '' and dvipng_check == '':
+                    message = 'Missing resources, please make sure you have latex and dvipng installed'
+                else:
+                    missing_resource = 'latex' if latex_check == '' else 'dvipng'
+                    message = 'Missing resources, command line utility % is not installed' % missing_resource
+                    
+                raise Exception(message)
         except Exception, e:
             print 'Error - failed search for resources'
             print 'Details -', e
