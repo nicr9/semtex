@@ -3,8 +3,8 @@ Created on 20 Jan 2012
 
 @author: nic
 '''
-import os, commands, sys
-from subprocess import call
+import os, sys
+import subprocess as sp
 from PyQt4 import QtGui, QtCore # TODO: Reduce scope of imports
 
 # Misc
@@ -175,8 +175,8 @@ class Semtex(QtGui.QWidget):
         """
         outp_file = open(outp_path,'w')
         try:
-            latex_check = call(['which', 'latex'], stdout = outp_file)
-            dvipng_check = call(['which', 'dvipng'], stdout = outp_file)
+            latex_check = sp.call(['which', 'latex'], stdout = outp_file)
+            dvipng_check = sp.call(['which', 'dvipng'], stdout = outp_file)
     
             if latex_check or dvipng_check:
                 message = ''
@@ -198,17 +198,22 @@ class Semtex(QtGui.QWidget):
     
     def cleanUp(self):
         """
-        Get rid of unneccessary files
+        Get rid of unnecessary files
         """
-        file_list = commands.getoutput('ls temp.*')
-        if file_list != 'ls: cannot access temp.*: No such file or directory': # TODO: Find a cleaner way
-            file_list = file_list.split('\n')
+        outp_file = open(outp_path,'w')
+        try:
+            file_list = sp.check_output('ls temp.*', shell = True, stdout = outp_file)
+            file_list = file_list.strip().split('\n')
             
             png = file_list.index('temp.png')
             file_list.pop(png) # We don't want to remove the image
             
             for row in file_list:
                 os.remove(row)
+        except sp.CalledProcessError:
+            pass
+        finally:
+            outp_file.close()
 
     def displayPng(self):
         """
