@@ -111,7 +111,7 @@ class Semtex(QtGui.QWidget):
         """
         Check last entry in history, insert into teInput
         """
-        if index >= self.hist_len and index < 0:
+        if index >= -(self.hist_len) and index < 0:
             if self.hist != []:
                 self.teInput.setText(self.hist[index])
             else:
