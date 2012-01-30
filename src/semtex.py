@@ -2,21 +2,42 @@
 Created on 20 Jan 2012
 
 @author: nic
+
+--- Upcoming ---
+* Code cleanup
+* Caching of saved equations .png files
+* Move all data files, cache to ~/.semtex
+* Separate class for window and editor to allow more advanced features such as:
+    * Menubar with history, about and settings
+    * Keyboard shortcuts: ctrl+q, ctrl+r, ctrl+s
+    * Statusbar for error messages
 '''
 import os, sys, shlex
 import subprocess as sp
 from PyQt4 import QtGui, QtCore
 
-# Misc
-logo_path = 'logo.png'
-outp_path = '.outp'
+# File paths
+app_logo_path = 'logo.png'
+stdout_path = '.outp'
+history_path = '.hist'
+head_path = '.start'
+foot_path = '.end'
+latex_code_path = 'temp.tex'
+latex_outp_path = 'temp.dvi'
+png_path = 'temp.png'
 
 class Semtex(QtGui.QWidget):
+    """
+    Main window of the SemTeX Equation Editor.
+    Consists of a text box to enter a LaTeX formatted equation, refresh and save buttons and an image button to display the equation in.
+    """
 
+    # Constants
+    HISTORY_LENGTH = 5 # max length of buffer
+    WELCOME_MESSAGE = "Welcome to SemTeX, please enter your equation here"
+    
     # Misc Variables
-    hist = [] # Buffer for recent history of commands
-    hist_len = 5 # max length of buffer
-    welcome_message = "Welcome to SemTeX, please enter your equation here"
+    equation_history = [] # Buffer for recent history of commands
     
     def __init__(self, clipboard):
         super(Semtex, self).__init__()
@@ -24,7 +45,7 @@ class Semtex(QtGui.QWidget):
         self.initUi()
         self.checkDependancies()
         self.loadHistory()
-        self.setFromHist(-1)
+        self.setFromHist(1)
         
         self.clip = clipboard
         
@@ -32,7 +53,7 @@ class Semtex(QtGui.QWidget):
         # --- Set Up Window ---
         self.setGeometry(300, 300, 350, 150)
         self.setWindowTitle('SemTeX: Equations Made using laTEX')
-        self.setWindowIcon(QtGui.QIcon(logo_path))
+        self.setWindowIcon(QtGui.QIcon(app_logo_path))
 
         # --- TextEdits ---
         self.teInput = QtGui.QTextEdit()
@@ -49,7 +70,7 @@ class Semtex(QtGui.QWidget):
         self.lEquation = QtGui.QPushButton(self)
         self.displayPng()
         self.lEquation.clicked.connect(self.copyToClipboard)
-        #self.lEquation.setPixmap(QtGui.QPixmap(logo_path))
+        #self.lEquation.setPixmap(QtGui.QPixmap(app_logo_path))
 
         # --- Sort Layout ---
         vbox = QtGui.QVBoxLayout()
@@ -86,7 +107,7 @@ class Semtex(QtGui.QWidget):
         Display previously saved equations in terminal
         """
         print 'Previous equations:'
-        for row in self.hist:
+        for row in self.equation_history:
             print '\t', row.strip()
 
     def loadHistory(self):
@@ -95,33 +116,31 @@ class Semtex(QtGui.QWidget):
         """
         try:
             # Check for history file or create history file
-            hist_file = file('.hist','r')
-            
-            # Load history from file
-            self.hist = []
-            for row in hist_file:
-                self.hist.append(row.strip())
+            with open(history_path,'r') as hist_file:            
+                # Load history from file
+                self.equation_history = []
+                for row in hist_file:
+                    self.equation_history.append(row.strip())
         
             self.displayHistory()
         except IOError, e:
             print 'Error - accessing history'
             print 'Details -', e
-        finally:
-            hist_file.close()
 
     def setFromHist(self, index):
+        # TODO: What happens if the buffer isn't at the max length and the index exceeds the current buffer length
         """
         Check last entry in history, insert into teInput
         """
-        if index >= -(self.hist_len) and index < 0:
-            if self.hist != []:
-                self.teInput.setText(self.hist[index])
+        if index <= self.HISTORY_LENGTH and index > 0:
+            if self.equation_history != []:
+                self.teInput.setText(self.equation_history[index])
             else:
-                self.teInput.setText(self.welcome_message)
+                self.teInput.setText(self.WELCOME_MESSAGE)
     
     def getInput(self):
         inp = self.teInput.toPlainText()
-        if inp != self.welcome_message and inp != '':
+        if inp != self.WELCOME_MESSAGE and inp != '':
             return inp
         else:
             return None
@@ -132,103 +151,86 @@ class Semtex(QtGui.QWidget):
         """
         # Generate LaTeX File
         try:
-            eq_start = file('.start','r')
-            eq_end = file('.end','r')
-            
-            eq = eq_start.read() + inp + eq_end.read()
-            
-            temp = file('temp.tex','w')
-            temp.write(eq)
+            with open(head_path,'r') as head, open(foot_path,'r') as foot, open(latex_code_path,'w') as outp:
+                # Concatenate LaTeX code from templates
+                eq = head.read() + inp + foot.read()
+                
+                # Write to output 
+                outp.write(eq)
         except IOError, e:
             print 'Error - creating .tex file'
             print 'Details -', e
-        finally:
-            eq_start.close()
-            eq_end.close()
-            temp.close()
         
     def compileLatex(self):
         """
         Use LaTeX to compile .tex file
         """
-        outp_file = None
         try:
-            outp_file = open(outp_path,'w')
-            cmd = 'latex temp.tex'
-            
-            x = sp.call(shlex.split(cmd), stdout = outp_file)
-            
-            if x:
-                raise Exception('compileLatex - subprocess call failed')
+            with open(stdout_path,'w') as outp_file:
+                cmd = 'latex %s' % latex_code_path
+                
+                x = sp.call(shlex.split(cmd), stdout = outp_file)
+                
+                if x:
+                    raise Exception('compileLatex - subprocess call failed')
         except Exception, e:
             print 'Error - compiling .tex file'
             raise e
         except sp.CalledProcessError, e:
             raise e
-        finally:
-            outp_file.close()
             
     def convertPng(self):
         """
         Converts dvi file created by latex to png
         """
-        outp_file = None
         try:
-            outp_file = open(outp_path,'w')
-            cmd = 'dvipng -T tight -x 1200 -z 9 -bg rgb 1.0 1.0 1.0 -o temp.png temp.dvi'
-            
-            x = sp.call(shlex.split(cmd), stdout = outp_file)
-            
-            if x:
-                raise Exception('convertPng - subprocess call failed')
+            with open(stdout_path,'w') as outp_file:
+                cmd = 'dvipng -T tight -x 1200 -z 9 -bg rgb 1.0 1.0 1.0 -o %s %s' % (png_path, latex_outp_path)
+                
+                x = sp.call(shlex.split(cmd), stdout = outp_file)
+                
+                if x:
+                    raise Exception('convertPng - subprocess call failed')
         except Exception, e:
             print 'Error - converting to png'
             raise e
         except sp.CalledProcessError, e:
             raise e
-        finally:
-            outp_file.close()
             
     def checkDependancies(self):
         """
         Check For Resources: dvipng, latex
         """
-        outp_file = None
         try:
-            outp_file = open(outp_path,'w')
-            cmd_latex = 'which latex'
-            cmd_dvipng = 'which dvipng'
-            
-            latex_check = sp.call(shlex.split(cmd_latex), stdout = outp_file)
-            dvipng_check = sp.call(shlex.split(cmd_dvipng), stdout = outp_file)
-    
-            if latex_check or dvipng_check:
-                message = ''
+            with open(stdout_path,'w') as outp_file:
+                cmd_latex = 'which latex'
+                cmd_dvipng = 'which dvipng'
                 
-                # Create exception message specifying the missing utility
-                if latex_check and dvipng_check:
-                    message = 'Please make sure you have latex and dvipng installed'
-                else:
-                    missing_resource = 'latex' if latex_check == '' else 'dvipng'
-                    message = 'Command line utility % could not be found' % missing_resource
+                latex_check = sp.call(shlex.split(cmd_latex), stdout = outp_file)
+                dvipng_check = sp.call(shlex.split(cmd_dvipng), stdout = outp_file)
+        
+                if latex_check or dvipng_check:
+                    message = ''
                     
-                raise Exception(message)
+                    # Create exception message specifying the missing utility
+                    if latex_check and dvipng_check:
+                        message = 'Please make sure you have latex and dvipng installed'
+                    else:
+                        missing_resource = 'latex' if latex_check == '' else 'dvipng'
+                        message = 'Command line utility % could not be found' % missing_resource
+                        
+                    raise Exception(message)
         except Exception, e:
             print 'Error - failed search for resources'
             print 'Details -', e
             quit()
-        finally:
-            outp_file.close()
     
     def cleanUp(self):
         """
         Get rid of unnecessary files
         """
-        outp_file = None
         try:
-            outp_file = open(outp_path,'w')
-            
-            file_list = sp.check_output('ls temp.*', shell = True, stdout = outp_file)
+            file_list = sp.check_output('ls temp.*', shell = True)
             file_list = file_list.strip().split('\n')
             
             png = file_list.index('temp.png')
@@ -237,9 +239,7 @@ class Semtex(QtGui.QWidget):
             for row in file_list:
                 os.remove(row)
         except sp.CalledProcessError:
-            pass
-        finally:
-            outp_file.close()
+            pass # This just means there aren't any files to clean up
 
     def displayPng(self):
         """
@@ -250,40 +250,38 @@ class Semtex(QtGui.QWidget):
         if eq != None:
             icon = QtGui.QIcon('temp.png')
         else:
-            icon = QtGui.QIcon(logo_path)
+            icon = QtGui.QIcon(app_logo_path)
         self.lEquation.setIcon(icon)
         self.lEquation.setIconSize(QtCore.QSize(100,100))
         
     def save(self):
         try:
             # Add contents of textEdit to history
-            self.hist.append(str(self.getInput()))
+            self.equation_history.append(str(self.getInput()))
             
             # Remove 'endl's from history
-            while '\n' in self.hist:
-                i = self.hist.index('\n')
-                self.hist.pop(i)
+            while '\n' in self.equation_history:
+                i = self.equation_history.index('\n')
+                self.equation_history.pop(i)
             
             # Last five entries only, add endl to each
-            hist = [z+'\n' for z in self.hist[-self.hist_len:]]
+            hist = [z+'\n' for z in self.equation_history[-self.HISTORY_LENGTH:]]
             
-            # Open history, update
-            hist_file = file('.hist','w')
-            for row in hist:
-                hist_file.write(row)
+            # Update history
+            with open(history_path,'w') as hist_file:
+                for row in hist:
+                    hist_file.write(row)
                 
             # Print new history to terminal
             self.displayHistory()
         except IOError, e:
             print e
-        finally:
-            hist_file.close()
     
     def copyToClipboard(self):
         """
         Copies the image 'temp.png' to the clipboard.
         """
-        # TODO Do something else if no equation
+        # TODO: Do something else if no equation
         self.clip.setPixmap(QtGui.QPixmap('temp.png'), mode = self.clip.Clipboard)
         print 'Copied to clipboard'
 
