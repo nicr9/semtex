@@ -16,7 +16,7 @@ import os, sys, shlex
 import subprocess as sp
 from PyQt4 import QtGui, QtCore
 
-# File paths
+# File paths TODO: These should be constants
 app_logo_path = 'logo.png'
 stdout_path = '.outp'
 history_path = '.hist'
@@ -33,23 +33,35 @@ class Semtex(QtGui.QWidget):
     """
 
     # Constants
-    HISTORY_LENGTH = 5 # max length of buffer
+    HISTORY_LENGTH = 5
     WELCOME_MESSAGE = "Welcome to SemTeX, please enter your equation here"
     
     # Misc Variables
-    equation_history = [] # Buffer for recent history of commands
+    equation_history = [] # Buffer for saved equation strings
     
-    def __init__(self, clipboard):
+    def __init__(self, clip):
+        """
+        Create and initialise equation editor widget.
+        """
         super(Semtex, self).__init__()
     
+        # Layout UI
         self.initUi()
-        self.checkDependancies()
-        self.loadHistory()
-        self.setFromHist(1)
         
-        self.clip = clipboard
+        # Ensure system requirements are met
+        self.checkDependancies()
+        
+        # Access saved equations and set last equation in the editor text box
+        self.loadHistory()
+        self.setFromHistory(1)
+        
+        # Bind application clip TODO: move this later 
+        self.clipboard = clip
         
     def initUi(self):
+        """
+        Create all sub widgets, layout appropriately. 
+        """
         # --- Set Up Window ---
         self.setGeometry(300, 300, 350, 150)
         self.setWindowTitle('SemTeX: Equations Made using laTEX')
@@ -70,7 +82,6 @@ class Semtex(QtGui.QWidget):
         self.lEquation = QtGui.QPushButton(self)
         self.displayPng()
         self.lEquation.clicked.connect(self.copyToClipboard)
-        #self.lEquation.setPixmap(QtGui.QPixmap(app_logo_path))
 
         # --- Sort Layout ---
         vbox = QtGui.QVBoxLayout()
@@ -90,21 +101,29 @@ class Semtex(QtGui.QWidget):
     
     def refresh(self):
         """
-        Takes the equation from the TextEdit, compiles and converts to PNG
+        Takes the equation from the self.teInput, compiles and converts to PNG.
         """
-        eq = self.getInput()
-        if eq != None:
-            self.generateLatex(eq)
-            self.compileLatex()
-            self.convertPng()
-            self.cleanUp()
-            self.displayPng()
-        else:
-            self.displayPng()
+        try:
+            # Read from self.teInput
+            eq = self.getInput()
+            
+            # If it contains an equation...
+            if eq != None:
+                # ... compile and display it...
+                self.generateLatex(eq)
+                self.compileLatex()
+                self.convertPng()
+                self.cleanUp()
+                self.displayPng()
+            else:
+                # ... otherwise, display the semtex logo 
+                self.displayPng()
+        except Exception, e:
+            raise e
 
-    def displayHistory(self):
+    def printHistory(self):
         """
-        Display previously saved equations in terminal
+        Display previously saved equations in terminal for debugging purposes.
         """
         print 'Previous equations:'
         for row in self.equation_history:
@@ -112,22 +131,25 @@ class Semtex(QtGui.QWidget):
 
     def loadHistory(self):
         """
-        Get last 5 entries in history, print to terminal
+        Load saved equations, print them to terminal.
         """
         try:
-            # Check for history file or create history file
-            with open(history_path,'r') as hist_file:            
-                # Load history from file
+            # Open/create history file
+            with open(history_path,'r') as hist_file:
+                # Clear previous history
                 self.equation_history = []
+                
+                # Load equations from file
                 for row in hist_file:
                     self.equation_history.append(row.strip())
-        
-            self.displayHistory()
+            
+            # TODO: Dev only
+            self.printHistory()
         except IOError, e:
             print 'Error - accessing history'
             print 'Details -', e
 
-    def setFromHist(self, index):
+    def setFromHistory(self, index):
         # TODO: What happens if the buffer isn't at the max length and the index exceeds the current buffer length
         """
         Check last entry in history, insert into teInput
@@ -273,7 +295,7 @@ class Semtex(QtGui.QWidget):
                     hist_file.write(row)
                 
             # Print new history to terminal
-            self.displayHistory()
+            self.printHistory()
         except IOError, e:
             print e
     
@@ -282,7 +304,7 @@ class Semtex(QtGui.QWidget):
         Copies the image 'temp.png' to the clipboard.
         """
         # TODO: Do something else if no equation
-        self.clip.setPixmap(QtGui.QPixmap('temp.png'), mode = self.clip.Clipboard)
+        self.clipboard.setPixmap(QtGui.QPixmap('temp.png'), mode = self.clipboard.Clipboard)
         print 'Copied to clipboard'
 
 def main():
