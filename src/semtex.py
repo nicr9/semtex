@@ -156,7 +156,7 @@ class Semtex(QtGui.QWidget):
         """
         if index <= self.HISTORY_LENGTH and index > 0:
             if self.equation_history != []:
-                self.teInput.setText(self.equation_history[index])
+                self.teInput.setText(self.equation_history[-index])
             else:
                 self.teInput.setText(self.WELCOME_MESSAGE)
     
