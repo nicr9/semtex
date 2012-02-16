@@ -16,15 +16,15 @@ import os, sys, shlex
 import subprocess as sp
 from PyQt4 import QtGui, QtCore
 
-# File paths TODO: These should be constants
-app_logo_path = 'logo.png'
-stdout_path = '.outp'
-history_path = '.hist'
-head_path = '.start'
-foot_path = '.end'
-latex_code_path = 'temp.tex'
-latex_outp_path = 'temp.dvi'
-png_path = 'temp.png'
+# File paths
+APP_LOGO_PATH = 'logo.png'
+STDOUT_PATH = '.outp'
+HISTORY_PATH = '.hist'
+HEADER_PATH = '.start'
+FOOTER_PATH = '.end'
+LATEX_CODE_PATH = 'temp.tex'
+LATEX_OUTP_PATH = 'temp.dvi'
+PNG_PATH = 'temp.png'
 
 class Semtex(QtGui.QWidget):
     """
@@ -65,7 +65,7 @@ class Semtex(QtGui.QWidget):
         # --- Set Up Window ---
         self.setGeometry(300, 300, 350, 150)
         self.setWindowTitle('SemTeX: Equations Made using laTEX')
-        self.setWindowIcon(QtGui.QIcon(app_logo_path))
+        self.setWindowIcon(QtGui.QIcon(APP_LOGO_PATH))
 
         # --- TextEdits ---
         self.teInput = QtGui.QTextEdit()
@@ -135,7 +135,7 @@ class Semtex(QtGui.QWidget):
         """
         try:
             # Open/create history file
-            with open(history_path,'r') as hist_file:
+            with open(HISTORY_PATH,'r') as hist_file:
                 # Clear previous history
                 self.equation_history = []
                 
@@ -189,7 +189,7 @@ class Semtex(QtGui.QWidget):
         """
         try:
             # Open templates and output file
-            with open(head_path,'r') as head, open(foot_path,'r') as foot, open(latex_code_path,'w') as outp:
+            with open(HEADER_PATH,'r') as head, open(FOOTER_PATH,'r') as foot, open(LATEX_CODE_PATH,'w') as outp:
                 # Concatenate LaTeX code from templates and input
                 eq = head.read() + inp + foot.read()
                 
@@ -205,9 +205,9 @@ class Semtex(QtGui.QWidget):
         """
         try:
             # Open file to store output from latex command
-            with open(stdout_path,'w') as stdout_file:
+            with open(STDOUT_PATH,'w') as stdout_file:
                 # latex command as string
-                cmd = 'latex %s' % latex_code_path
+                cmd = 'latex %s' % LATEX_CODE_PATH
                 
                 # Run command in separate process
                 x = sp.call(shlex.split(cmd), stdout = stdout_file)
@@ -226,9 +226,9 @@ class Semtex(QtGui.QWidget):
         """
         try:
             # Open file to store output from dvipng command
-            with open(stdout_path,'w') as stdout_file:
+            with open(STDOUT_PATH,'w') as stdout_file:
                 # dvipng command as string
-                cmd = 'dvipng -T tight -x 1200 -z 9 -bg rgb 1.0 1.0 1.0 -o %s %s' % (png_path, latex_outp_path)
+                cmd = 'dvipng -T tight -x 1200 -z 9 -bg rgb 1.0 1.0 1.0 -o %s %s' % (PNG_PATH, LATEX_OUTP_PATH)
                 
                 # Run command in separate process
                 x = sp.call(shlex.split(cmd), stdout = stdout_file)
@@ -248,7 +248,7 @@ class Semtex(QtGui.QWidget):
         """
         try:
             # Open file to store output from either command
-            with open(stdout_path,'w') as outp_file:
+            with open(STDOUT_PATH,'w') as outp_file:
                 # Commands as strings
                 cmd_latex = 'which latex'
                 cmd_dvipng = 'which dvipng'
@@ -301,13 +301,13 @@ class Semtex(QtGui.QWidget):
         eq = self.getInput()
         
         # If the box contents is invalid, use the app logo, otherwise use the equation's .png
-        temp_path = app_logo_path if eq is None else png_path
+        temp_path = APP_LOGO_PATH if eq is None else PNG_PATH
         
         # Open the image as a QIcon
-        with QtGui.QIcon(temp_path) as icon:
-            # Display in equation editor
-            self.lEquation.setIcon(icon)
-            self.lEquation.setIconSize(QtCore.QSize(100,100))
+        icon = QtGui.QIcon(temp_path)
+        # Display in equation editor
+        self.lEquation.setIcon(icon)
+        self.lEquation.setIconSize(QtCore.QSize(100,100))
         
     def saveToHistory(self):
         """
@@ -327,7 +327,7 @@ class Semtex(QtGui.QWidget):
             hist = [z+'\n' for z in self.equation_history[-self.HISTORY_LENGTH:]]
             
             # Update history
-            with open(history_path,'w') as hist_file:
+            with open(HISTORY_PATH,'w') as hist_file:
                 for row in hist:
                     hist_file.write(row)
                 
@@ -344,7 +344,7 @@ class Semtex(QtGui.QWidget):
         """
         # TODO: Do something else if no equation
         # Cast png to QPixmap, add to clipboard
-        self.clipboard.setPixmap(QtGui.QPixmap(png_path), mode = self.clipboard.Clipboard)
+        self.clipboard.setPixmap(QtGui.QPixmap(PNG_PATH), mode = self.clipboard.Clipboard)
         
         # TODO: Dev only
         print 'Copied to clipboard'
