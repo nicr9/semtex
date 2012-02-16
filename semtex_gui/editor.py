@@ -20,8 +20,8 @@ from PyQt4 import QtGui, QtCore
 DEV_MODE = True
 
 # File paths TODO clean up paths
-CACHE_PATH = '../cache/'
-RES_PATH = '../res/'
+CACHE_PATH = 'semtex_gui/cache/'
+RES_PATH = 'semtex_gui/res/'
 APP_LOGO_PATH = RES_PATH + 'logo.png'
 STDOUT_PATH = CACHE_PATH + '.outp'
 HISTORY_PATH = CACHE_PATH + '.hist'
@@ -31,7 +31,7 @@ LATEX_CODE_PATH = CACHE_PATH + 'temp.tex'
 LATEX_OUTP_PATH = CACHE_PATH + 'temp.dvi'
 PNG_PATH = CACHE_PATH + 'temp.png'
 
-class Semtex(QtGui.QWidget):
+class Editor(QtGui.QWidget):
     """
     Main window of the SemTeX Equation Editor.
     Consists of a text box to enter a LaTeX formatted equation, refresh and saveToHistory buttons and an image button to display the equation in.
@@ -48,7 +48,7 @@ class Semtex(QtGui.QWidget):
         """
         Create and initialise equation editor widget.
         """
-        super(Semtex, self).__init__()
+        super(Editor, self).__init__()
     
         # Layout UI
         self.initUi()
@@ -357,7 +357,7 @@ class Semtex(QtGui.QWidget):
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    root = Semtex(app.clipboard()) #@UnusedVariable
+    root = Editor(app.clipboard()) #@UnusedVariable
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
