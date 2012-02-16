@@ -19,15 +19,17 @@ from PyQt4 import QtGui, QtCore
 # Dev mode enabled
 DEV_MODE = True
 
-# File paths
-APP_LOGO_PATH = '../res/logo.png'
-STDOUT_PATH = '../cache/.outp'
-HISTORY_PATH = '../cache/.hist'
-HEADER_PATH = '../res/.start'
-FOOTER_PATH = '../res/.end'
-LATEX_CODE_PATH = '../cache/temp.tex'
-LATEX_OUTP_PATH = '../cache/temp.dvi'
-PNG_PATH = '../cache/temp.png'
+# File paths TODO clean up paths
+CACHE_PATH = '../cache/'
+RES_PATH = '../res/'
+APP_LOGO_PATH = RES_PATH + 'logo.png'
+STDOUT_PATH = CACHE_PATH + '.outp'
+HISTORY_PATH = CACHE_PATH + '.hist'
+HEADER_PATH = RES_PATH + '.start'
+FOOTER_PATH = RES_PATH + '.end'
+LATEX_CODE_PATH = CACHE_PATH + 'temp.tex'
+LATEX_OUTP_PATH = CACHE_PATH + 'temp.dvi'
+PNG_PATH = CACHE_PATH + 'temp.png'
 
 class Semtex(QtGui.QWidget):
     """
@@ -209,7 +211,7 @@ class Semtex(QtGui.QWidget):
             # Open file to store output from latex command
             with open(STDOUT_PATH,'w') as stdout_file:
                 # latex command as string
-                cmd = 'latex %s' % LATEX_CODE_PATH
+                cmd = 'latex -output-directory=%s %s' % (CACHE_PATH,LATEX_CODE_PATH)
                 
                 # Run command in separate process
                 x = sp.call(shlex.split(cmd), stdout = stdout_file)
@@ -282,7 +284,7 @@ class Semtex(QtGui.QWidget):
         """
         try:
             # Check for any files called temp, create list
-            file_list = sp.check_output('ls temp.*', shell = True)
+            file_list = sp.check_output('ls %stemp.*' % CACHE_PATH, shell = True)
             file_list = file_list.strip().split('\n')
             
             # Find a temp.png, remove it from list
