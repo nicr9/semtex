@@ -20,14 +20,14 @@ from PyQt4 import QtGui, QtCore
 DEV_MODE = True
 
 # File paths
-APP_LOGO_PATH = 'logo.png'
-STDOUT_PATH = '.outp'
-HISTORY_PATH = '.hist'
-HEADER_PATH = '.start'
-FOOTER_PATH = '.end'
-LATEX_CODE_PATH = 'temp.tex'
-LATEX_OUTP_PATH = 'temp.dvi'
-PNG_PATH = 'temp.png'
+APP_LOGO_PATH = '../res/logo.png'
+STDOUT_PATH = '../cache/.outp'
+HISTORY_PATH = '../cache/.hist'
+HEADER_PATH = '../res/.start'
+FOOTER_PATH = '../res/.end'
+LATEX_CODE_PATH = '../cache/temp.tex'
+LATEX_OUTP_PATH = '../cache/temp.dvi'
+PNG_PATH = '../cache/temp.png'
 
 class Semtex(QtGui.QWidget):
     """
@@ -153,12 +153,11 @@ class Semtex(QtGui.QWidget):
             print 'Details -', e
 
     def setFromHistory(self, index):
-        # TODO: What happens if the buffer isn't at the max length and the index exceeds the current buffer length
         """
         Check last entry in history, insert into teInput
         """
         # Ensure the index is within the list bounds
-        if index <= self.HISTORY_LENGTH and index > 0:
+        if index < len(self.equation_history) and index > 0:
             
             # If history isn't empty...
             if self.equation_history is not []:
