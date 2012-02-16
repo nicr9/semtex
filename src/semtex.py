@@ -16,6 +16,9 @@ import os, sys, shlex
 import subprocess as sp
 from PyQt4 import QtGui, QtCore
 
+# Dev mode enabled
+DEV_MODE = True
+
 # File paths
 APP_LOGO_PATH = 'logo.png'
 STDOUT_PATH = '.outp'
@@ -143,8 +146,8 @@ class Semtex(QtGui.QWidget):
                 for row in hist_file:
                     self.equation_history.append(row.strip())
             
-            # TODO: Dev only
-            self.printHistory()
+            if DEV_MODE:
+                self.printHistory()
         except IOError, e:
             print 'Error - accessing history'
             print 'Details -', e
@@ -277,14 +280,14 @@ class Semtex(QtGui.QWidget):
     def cleanUp(self):
         """
         Delete any temporary files that were created during refresh().
-        """ # TODO: Extract path variables
+        """
         try:
             # Check for any files called temp, create list
             file_list = sp.check_output('ls temp.*', shell = True)
             file_list = file_list.strip().split('\n')
             
             # Find a temp.png, remove it from list
-            png = file_list.index('temp.png')
+            png = file_list.index(PNG_PATH)
             file_list.pop(png)
             
             # Delete any file remaining in the list
@@ -342,12 +345,14 @@ class Semtex(QtGui.QWidget):
         """
         Copies the equations image to the clipboard.
         """
-        # TODO: Do something else if no equation
         # Cast png to QPixmap, add to clipboard
-        self.clipboard.setPixmap(QtGui.QPixmap(PNG_PATH), mode = self.clipboard.Clipboard)
-        
-        # TODO: Dev only
-        print 'Copied to clipboard'
+        if self.getInput():
+            self.clipboard.setPixmap(QtGui.QPixmap(PNG_PATH), mode = self.clipboard.Clipboard)
+            if DEV_MODE:
+                print 'Copied to clipboard'
+        else:
+            if DEV_MODE:
+                print 'Nothing to copy to clipboard'
 
 def main():
     app = QtGui.QApplication(sys.argv)
