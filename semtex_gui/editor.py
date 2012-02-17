@@ -20,17 +20,17 @@ from PyQt4 import QtGui, QtCore
 DEV_MODE = True
 
 # File paths
-CACHE_PATH = 'semtex_gui/cache/'
-RES_PATH = 'semtex_gui/res/'
-APP_LOGO_PATH = RES_PATH + 'logo.png'
-STDOUT_PATH = CACHE_PATH + '.outp'
-HISTORY_PATH = CACHE_PATH + '.hist'
-HEADER_PATH = RES_PATH + '.start'
-FOOTER_PATH = RES_PATH + '.end'
-LATEX_CODE_PATH = CACHE_PATH + 'temp.tex'
-LATEX_OUTP_PATH = CACHE_PATH + 'temp.dvi'
-PNG_DISP_PATH = CACHE_PATH + 'temp.png'
-PNG_CLIP_PATH = CACHE_PATH + 'clip.png'
+CACHE_PATH = os.path.join('semtex_gui','cache')
+RES_PATH = os.path.join('semtex_gui','res')
+APP_LOGO_PATH = os.path.join(RES_PATH, 'logo.png')
+STDOUT_PATH = os.path.join(CACHE_PATH, '.outp')
+HISTORY_PATH = os.path.join(CACHE_PATH, '.hist')
+HEADER_PATH = os.path.join(RES_PATH, '.start')
+FOOTER_PATH = os.path.join(RES_PATH, '.end')
+LATEX_CODE_PATH = os.path.join(CACHE_PATH, 'temp.tex')
+LATEX_OUTP_PATH = os.path.join(CACHE_PATH, 'temp.dvi')
+PNG_DISP_PATH = os.path.join(CACHE_PATH, 'temp.png')
+PNG_CLIP_PATH = os.path.join(CACHE_PATH, 'clip.png')
 
 class Editor(QtGui.QWidget):
     """
