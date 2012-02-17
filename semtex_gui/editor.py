@@ -19,7 +19,7 @@ from PyQt4 import QtGui, QtCore
 # Dev mode enabled
 DEV_MODE = True
 
-# File paths TODO clean up paths
+# File paths
 CACHE_PATH = 'semtex_gui/cache/'
 RES_PATH = 'semtex_gui/res/'
 APP_LOGO_PATH = RES_PATH + 'logo.png'
@@ -29,7 +29,8 @@ HEADER_PATH = RES_PATH + '.start'
 FOOTER_PATH = RES_PATH + '.end'
 LATEX_CODE_PATH = CACHE_PATH + 'temp.tex'
 LATEX_OUTP_PATH = CACHE_PATH + 'temp.dvi'
-PNG_PATH = CACHE_PATH + 'temp.png'
+PNG_DISP_PATH = CACHE_PATH + 'temp.png'
+PNG_CLIP_PATH = CACHE_PATH + 'clip.png'
 
 class Editor(QtGui.QWidget):
     """
@@ -118,6 +119,7 @@ class Editor(QtGui.QWidget):
                 self.generateLatex(eq)
                 self.compileLatex()
                 self.convertPng()
+                self.convertPng('transparent', PNG_DISP_PATH)
                 self.cleanUp()
                 self.displayPng()
             else:
@@ -224,7 +226,7 @@ class Editor(QtGui.QWidget):
         except Exception, e:
             raise e
             
-    def convertPng(self):
+    def convertPng(self, bg = 'rgb 1.0 1.0 1.0', outp = PNG_CLIP_PATH):
         """
         Using dvipng command line utility, creates a .png file from the .dvi file generated earlier by latex.
         """
@@ -232,7 +234,7 @@ class Editor(QtGui.QWidget):
             # Open file to store output from dvipng command
             with open(STDOUT_PATH,'w') as stdout_file:
                 # dvipng command as string
-                cmd = 'dvipng -T tight -x 1200 -z 9 -bg rgb 1.0 1.0 1.0 -o %s %s' % (PNG_PATH, LATEX_OUTP_PATH)
+                cmd = 'dvipng -T tight -x 1200 -z 9 -bg %s -o %s %s' % (bg, outp, LATEX_OUTP_PATH)
                 
                 # Run command in separate process
                 x = sp.call(shlex.split(cmd), stdout = stdout_file)
@@ -288,7 +290,7 @@ class Editor(QtGui.QWidget):
             file_list = file_list.strip().split('\n')
             
             # Find a temp.png, remove it from list
-            png = file_list.index(PNG_PATH)
+            png = file_list.index(PNG_DISP_PATH)
             file_list.pop(png)
             
             # Delete any file remaining in the list
@@ -305,7 +307,7 @@ class Editor(QtGui.QWidget):
         eq = self.getInput()
         
         # If the box contents is invalid, use the app logo, otherwise use the equation's .png
-        temp_path = APP_LOGO_PATH if eq is None else PNG_PATH
+        temp_path = APP_LOGO_PATH if eq is None else PNG_DISP_PATH
         
         # Open the image as a QIcon
         icon = QtGui.QIcon(temp_path)
@@ -348,7 +350,7 @@ class Editor(QtGui.QWidget):
         """
         # Cast png to QPixmap, add to clipboard
         if self.getInput():
-            self.clipboard.setPixmap(QtGui.QPixmap(PNG_PATH), mode = self.clipboard.Clipboard)
+            self.clipboard.setPixmap(QtGui.QPixmap(PNG_CLIP_PATH), mode = self.clipboard.Clipboard)
             if DEV_MODE:
                 print 'Copied to clipboard'
         else:
