@@ -286,7 +286,7 @@ class Editor(QtGui.QWidget):
         """
         try:
             # Check for any files called temp, create list
-            file_list = sp.check_output('ls %stemp.*' % CACHE_PATH, shell = True)
+            file_list = sp.check_output('ls %s' % os.path.join(CACHE_PATH,'temp.*'), shell = True)
             file_list = file_list.strip().split('\n')
             
             # Find a temp.png, remove it from list
