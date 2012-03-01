@@ -70,7 +70,7 @@ class Editor(QtGui.QWidget):
         """
         # --- Set Up Window ---
         self.setGeometry(300, 300, 350, 150)
-        self.setWindowTitle('SemTeX: Equations Made using laTEX')
+        self.setWindowTitle('SemTeX: Equations Made using LaTeX')
         self.setWindowIcon(QtGui.QIcon(APP_LOGO_PATH))
 
         # --- TextEdits ---

@@ -1,5 +1,4 @@
-import os, sys, shlex #@UnusedImport
-import subprocess as sp #@UnusedImport
+import sys
 from PyQt4 import QtGui, QtCore #@UnusedImport
 from semtex_gui.editor import * #@UnusedWildImport
 
