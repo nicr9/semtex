@@ -35,6 +35,9 @@ class Main(QtGui.QMainWindow):
         self.ui.push_history.clicked.connect(self.saveToHistory)
         self.ui.push_equation.clicked.connect(self.copyToClipboard)
 
+        # Display application logo
+        self.displayPng()
+
         # Access saved equations and set last equation in the editor text box
         self.loadHistory()
         self.setFromHistory(1)
@@ -90,8 +93,7 @@ class Main(QtGui.QMainWindow):
             if const.DEV_MODE:
                 self.printHistory()
         except IOError, e:
-            print 'Error - accessing history'
-            print 'Details -', e
+            raise e # TODO Method for creating files like .hist
 
     def setFromHistory(self, index):
         """

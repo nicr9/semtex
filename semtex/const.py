@@ -7,7 +7,7 @@ DEV_MODE = True
 
 # Application Constants
 HISTORY_LENGTH = 5
-WELCOME_MESSAGE = "Welcome to SemTeX, please enter your equation here"
+WELCOME_MESSAGE = "Enter LaTeX code here"
 
 # File paths
 CACHE_PATH = os.path.join('semtex_gui','cache')
