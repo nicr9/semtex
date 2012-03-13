@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'layout.ui'
 #
-# Created: Tue Mar 13 13:57:17 2012
+# Created: Tue Mar 13 16:19:23 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -80,4 +80,4 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         pass
 
-import semtex_rc
+#import semtex_rc
