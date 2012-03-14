@@ -14,7 +14,7 @@ class Main(QtGui.QMainWindow):
     # Misc Variables
     equation_history = [] # Buffer for saved equation strings
 
-    def __init__(self,clip):
+    def __init__(self,app):
         """
         Setup GUI layout, connect event handlers.
         """
@@ -42,8 +42,8 @@ class Main(QtGui.QMainWindow):
         self.loadHistory()
         self.setFromHistory(1)
 
-        # Bind application clipboard # TODO move this later
-        self.clipboard = clip
+        # Bind application clipboard
+        self.clipboard = app.clipboard()
 
     def refresh(self):
         """
