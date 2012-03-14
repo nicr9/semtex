@@ -92,8 +92,12 @@ class Main(QtGui.QMainWindow):
 
             if const.DEV_MODE:
                 self.printHistory()
-        except IOError, e:
-            raise e # TODO Method for creating files like .hist
+        except IOError:
+            self.createHistory()
+
+    def createHistory(self):
+        with open(const.HISTORY_PATH,'w'):
+            pass
 
     def setFromHistory(self, index):
         """
