@@ -68,13 +68,19 @@ class Main(QtGui.QMainWindow):
         except Exception, e:
             raise e
 
-    def printHistory(self):
+    def refreshHistory(self):
         """
-        Display previously saved equations in terminal for debugging purposes.
+        Display previously saved equations in Menubar>History.
         """
-        print 'Previous equations:'
+        if const.DEV_MODE:
+            print 'Previous equations:'
+        self.ui.menu_history.clear()
         for row in self.equation_history:
-            print '\t', row.strip()
+            if const.DEV_MODE:
+                print '\t', row.strip()
+            action = QtGui.QAction(self)
+            action.setText(row.strip())
+            self.ui.menu_history.addAction(action)
 
     def loadHistory(self):
         """
@@ -91,7 +97,7 @@ class Main(QtGui.QMainWindow):
                     self.equation_history.append(row.strip())
 
             if const.DEV_MODE:
-                self.printHistory()
+                self.refreshHistory()
         except IOError:
             self.createHistory()
 
@@ -283,7 +289,7 @@ class Main(QtGui.QMainWindow):
                     hist_file.write(row)
 
             # Print new history to terminal
-            self.printHistory()
+            self.refreshHistory()
         except IOError, e:
             raise e
         except Exception, e:
