@@ -7,8 +7,8 @@ Equation editor for Linux that takes LaTeX code and copys the resulting png to y
 Dependancies
 ============
 PyQt4 - http://www.riverbankcomputing.co.uk/software/pyqt/download
-LaTeX - ??
-dvipng - ??
+LaTeX - www.latex-project.org
+dvipng - sourceforge.net/projects/dvipng/
 
 How to
 ======
