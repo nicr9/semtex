@@ -50,6 +50,9 @@ class Main(QtGui.QMainWindow):
         Takes the equation from the self.teInput, compiles and converts to PNG.
         """
         try:
+            # Clear statusbar
+            self.status()
+
             # Read from self.teInput
             eq = self.getInput()
 
@@ -99,7 +102,7 @@ class Main(QtGui.QMainWindow):
             if const.DEV_MODE:
                 self.refreshHistory()
         except IOError:
-            self.printStatus('Created history file')
+            self.status('Created history file')
             self.createHistory()
 
     def createHistory(self):
@@ -154,7 +157,7 @@ class Main(QtGui.QMainWindow):
                 # Write code to output file
                 outp.write(eq)
         except IOError, e:
-            self.printStatus('Error - creating .tex file')
+            self.status('Error - creating .tex file')
             raise e
 
     def compileLatex(self):
@@ -165,7 +168,7 @@ class Main(QtGui.QMainWindow):
             # Open file to store output from latex command
             with open(const.STDOUT_PATH,'w') as stdout_file:
                 # latex command as string
-                cmd = 'latex -output-directory=%s %s' % (const.CACHE_PATH,const.LATEX_CODE_PATH)
+                cmd = 'latex -halt-on-error -output-directory=%s %s' % (const.CACHE_PATH,const.LATEX_CODE_PATH)
 
                 # Run command in separate process
                 latex_call = sp.call(shlex.split(cmd), stdout = stdout_file)
@@ -175,8 +178,8 @@ class Main(QtGui.QMainWindow):
                     raise Exception('compileLatex - subprocess call failed')
         except sp.CalledProcessError, e:
             raise e
-        except Exception, e:
-            raise e
+        except Exception:
+            self.status('LaTeX error!')
 
     def convertPng(self, bg = 'rgb 1.0 1.0 1.0', outp = const.PNG_CLIP_PATH):
         """
@@ -293,7 +296,7 @@ class Main(QtGui.QMainWindow):
             self.refreshHistory()
 
             # Alert user that save was successful
-            self.printStatus('Saved to history')
+            self.status('Saved to history')
         except IOError, e:
             raise e
         except Exception, e:
@@ -306,9 +309,12 @@ class Main(QtGui.QMainWindow):
         # Cast png to QPixmap, add to clipboard
         if self.getInput():
             self.clipboard.setPixmap(QtGui.QPixmap(const.PNG_CLIP_PATH), mode = self.clipboard.Clipboard)
-            self.printStatus('Copied to clipboard')
+            self.status('Copied to clipboard')
         else:
-            self.printStatus('Nothing to copy to clipboard')
+            self.status('Nothing to copy to clipboard')
 
-    def printStatus(self,message):
-        self.ui.statusbar.showMessage(message)
+    def status(self,message=None):
+        if message is None:
+            self.ui.statusbar.clearMessage()
+        else:
+            self.ui.statusbar.showMessage(message)
