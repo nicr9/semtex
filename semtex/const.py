@@ -10,8 +10,8 @@ HISTORY_LENGTH = 5
 WELCOME_MESSAGE = "Enter LaTeX code here"
 
 # File paths
-CACHE_PATH = os.path.join('semtex_gui','cache')
-RES_PATH = os.path.join('semtex_gui','res')
+CACHE_PATH = os.path.join('semtex','cache')
+RES_PATH = os.path.join('semtex','res')
 APP_LOGO_PATH = os.path.join(RES_PATH, 'logo.png')
 STDOUT_PATH = os.path.join(CACHE_PATH, '.outp')
 HISTORY_PATH = os.path.join(CACHE_PATH, '.hist')
