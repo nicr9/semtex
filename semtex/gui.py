@@ -99,6 +99,7 @@ class Main(QtGui.QMainWindow):
             if const.DEV_MODE:
                 self.refreshHistory()
         except IOError:
+            self.printStatus('Created history file')
             self.createHistory()
 
     def createHistory(self):
@@ -153,8 +154,8 @@ class Main(QtGui.QMainWindow):
                 # Write code to output file
                 outp.write(eq)
         except IOError, e:
-            print 'Error - creating .tex file'
-            print 'Details -', e
+            self.printStatus('Error - creating .tex file')
+            raise e
 
     def compileLatex(self):
         """
@@ -290,6 +291,9 @@ class Main(QtGui.QMainWindow):
 
             # Print new history to terminal
             self.refreshHistory()
+
+            # Alert user that save was successful
+            self.printStatus('Saved to history')
         except IOError, e:
             raise e
         except Exception, e:
@@ -302,8 +306,9 @@ class Main(QtGui.QMainWindow):
         # Cast png to QPixmap, add to clipboard
         if self.getInput():
             self.clipboard.setPixmap(QtGui.QPixmap(const.PNG_CLIP_PATH), mode = self.clipboard.Clipboard)
-            if const.DEV_MODE:
-                print 'Copied to clipboard'
+            self.printStatus('Copied to clipboard')
         else:
-            if const.DEV_MODE:
-                print 'Nothing to copy to clipboard'
+            self.printStatus('Nothing to copy to clipboard')
+
+    def printStatus(self,message):
+        self.ui.statusbar.showMessage(message)
