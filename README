@@ -6,14 +6,16 @@ Equation editor for Linux that takes LaTeX code and copys the resulting png to y
 
 Dependancies
 ============
+Python 2.7.x - www.python.org
 PyQt4 - http://www.riverbankcomputing.co.uk/software/pyqt/download
 LaTeX - www.latex-project.org
-dvipng - sourceforge.net/projects/dvipng/
+dvipng - www.sourceforge.net/projects/dvipng/
 
 How to
 ======
-* Install dependancies.
-    - sudo apt-get install latex dvipng python-qt4
+* Make sure you're using python 2.7 or greater.
+* Install dependencies (this will take a long time, pyqt4 takes ages).
+    - sudo apt-get install texlive-full dvipng python-qt4
 * Run `python semtex.py`
 * Enter some LaTeX code and press refresh to render the code.
 * Click on the rendered image to copy it to your clipboard.
@@ -22,3 +24,4 @@ Upcoming Features
 =================
 * Resore saved equations from history
 * Status messages in the statusbar
+* Package SemTeX up with dependencies to make installable
