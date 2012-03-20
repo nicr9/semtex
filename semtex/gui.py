@@ -78,11 +78,18 @@ class Main(QtGui.QMainWindow):
         if const.DEV_MODE:
             print 'Previous equations:'
         self.ui.menu_history.clear()
-        for row in self.equation_history:
+        for row_number in range(len(self.equation_history)):
+            # Get next equation from history
+            row = self.equation_history[row_number].strip()
+
+            # Print to terminal
             if const.DEV_MODE:
-                print '\t', row.strip()
+                print '\t', row
+
+            # Create menubar action
             action = QtGui.QAction(self)
-            action.setText(row.strip())
+            action.setText(row)
+            QtCore.QObject.connect(action,QtCore.SIGNAL("triggered()"),lambda x=(row_number+1):self.setFromHistory(x))
             self.ui.menu_history.addAction(action)
 
     def loadHistory(self):
@@ -113,8 +120,9 @@ class Main(QtGui.QMainWindow):
         """
         Check last entry in history, insert into teInput
         """
+        print "index is ", index
         # Ensure the index is within the list bounds
-        if len(self.equation_history) > index > 0:
+        if len(self.equation_history) >= index > 0:
 
             # If history isn't empty...
             if self.equation_history is not []:
