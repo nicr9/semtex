@@ -92,6 +92,27 @@ class Main(QtGui.QMainWindow):
             QtCore.QObject.connect(action,QtCore.SIGNAL("triggered()"),lambda x=(row_number+1):self.setFromHistory(x))
             self.ui.menu_history.addAction(action)
 
+        # Add separator
+        self.ui.menu_history.addSeparator()
+
+        # Add an action to clear the history
+        action = QtGui.QAction(self)
+        action.setText("Clear")
+        action.triggered.connect(self.clearHistory)
+        self.ui.menu_history.addAction(action)
+
+    def clearHistory(self):
+        # Empty equation history
+        self.equation_history = []
+
+        # Update history
+        with open(const.HISTORY_PATH,'w'):
+            pass
+
+        self.refreshHistory()
+
+        self.status("History cleared")
+
     def loadHistory(self):
         """
         Load saved equations, print them to terminal.
