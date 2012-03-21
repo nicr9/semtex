@@ -22,5 +22,6 @@ How to
 
 Upcoming Features
 =================
-* Restore saved equations from history
 * Package SemTeX up with dependencies to make installable
+* Auto create ~/.semtex folder to store cache/ and res/
+* About screen and LaTeX Cheet Sheet
