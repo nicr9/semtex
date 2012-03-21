@@ -40,7 +40,7 @@ class Main(QtGui.QMainWindow):
 
         # Access saved equations and set last equation in the editor text box
         self.loadHistory()
-        self.setFromHistory(1)
+        self.setFromHistory(len(self.equation_history))
 
         # Bind application clipboard
         self.clipboard = app.clipboard()
@@ -148,7 +148,7 @@ class Main(QtGui.QMainWindow):
             # If history isn't empty...
             if self.equation_history is not []:
                 # ... display equation from history...
-                self.ui.text_equation.setText(self.equation_history[-index])
+                self.ui.text_equation.setText(self.equation_history[index-1])
             else:
                 # ... otherwise display welcome message.
                 self.ui.text_equation.setText(const.WELCOME_MESSAGE)
@@ -297,7 +297,7 @@ class Main(QtGui.QMainWindow):
         icon = QtGui.QIcon(temp_path)
         # Display in equation editor
         self.ui.push_equation.setIcon(icon)
-        self.ui.push_equation.setIconSize(QtCore.QSize(100,100))
+        self.ui.push_equation.setIconSize(QtCore.QSize(190,190))
 
     def saveToHistory(self):
         """
