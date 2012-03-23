@@ -38,6 +38,10 @@ class Main(QtGui.QMainWindow):
         self.ui.push_equation.clicked.connect(self.copyToClipboard)
         self.ui.action_about.triggered.connect(self.showAbout)
 
+        # Keyboard shortcuts
+        QtGui.QShortcut(QtGui.QKeySequence("Ctrl+Q"), self, QtGui.qApp.quit)
+        QtGui.QShortcut(QtGui.QKeySequence("Ctrl+R"), self, self.refresh)
+
         # Display application logo
         self.displayPng()
 
