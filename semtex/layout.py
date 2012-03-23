@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'layout.ui'
 #
-# Created: Tue Mar 13 23:07:15 2012
+# Created: Thu Mar 22 19:11:41 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -64,15 +64,19 @@ class Ui_MainWindow(object):
         self.menu_history = QtGui.QMenu(self.menubar)
         self.menu_history.setTitle(QtGui.QApplication.translate("MainWindow", "History", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_history.setObjectName(_fromUtf8("menu_history"))
-        self.menu_about = QtGui.QMenu(self.menubar)
-        self.menu_about.setTitle(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))
-        self.menu_about.setObjectName(_fromUtf8("menu_about"))
+        self.menu_help = QtGui.QMenu(self.menubar)
+        self.menu_help.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_help.setObjectName(_fromUtf8("menu_help"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
+        self.action_about = QtGui.QAction(MainWindow)
+        self.action_about.setText(QtGui.QApplication.translate("MainWindow", "About SemTeX", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_about.setObjectName(_fromUtf8("action_about"))
+        self.menu_help.addAction(self.action_about)
         self.menubar.addAction(self.menu_history.menuAction())
-        self.menubar.addAction(self.menu_about.menuAction())
+        self.menubar.addAction(self.menu_help.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)

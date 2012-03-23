@@ -1,5 +1,6 @@
 from PyQt4 import QtGui, QtCore
 from semtex.layout import Ui_MainWindow
+from semtex.about import Ui_About
 import semtex.const as const
 import os, shlex
 import subprocess as sp
@@ -27,13 +28,15 @@ class Main(QtGui.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # Change title
+        # Change title, position
         self.setWindowTitle('SemTeX')
+        self.move(200,200)
 
         # Connect event handlers
         self.ui.push_refresh.clicked.connect(self.refresh)
         self.ui.push_history.clicked.connect(self.saveToHistory)
         self.ui.push_equation.clicked.connect(self.copyToClipboard)
+        self.ui.action_about.triggered.connect(self.showAbout)
 
         # Display application logo
         self.displayPng()
@@ -347,3 +350,18 @@ class Main(QtGui.QMainWindow):
             self.ui.statusbar.clearMessage()
         else:
             self.ui.statusbar.showMessage(message)
+
+    def showAbout(self):
+            """
+            Creates a new window displaying Information about SemTeX.
+            """
+            # Create new dialog, setup using about.py
+            dialog = QtGui.QDialog()
+            about = Ui_About()
+            about.setupUi(dialog)
+
+            # Inset logo
+            about.logo.setPixmap(QtGui.QPixmap(const.APP_LOGO_PATH))
+
+            # Execute new dialog box
+            dialog.exec_()

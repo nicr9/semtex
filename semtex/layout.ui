@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -106,15 +109,21 @@ p, li { white-space: pre-wrap; }
      <string>History</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menu_about">
+   <widget class="QMenu" name="menu_help">
     <property name="title">
-     <string>About</string>
+     <string>Help</string>
     </property>
+    <addaction name="action_about"/>
    </widget>
    <addaction name="menu_history"/>
-   <addaction name="menu_about"/>
+   <addaction name="menu_help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_about">
+   <property name="text">
+    <string>About SemTeX</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
