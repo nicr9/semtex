@@ -7,6 +7,7 @@
 \usepackage[dvips]{graphicx}
 \usepackage{color}
 
+\usepackage{amssymb}
 \usepackage{amsmath}
 
 \usepackage{pslatex}
