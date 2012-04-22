@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, QtCore
 from semtex.layout import Ui_MainWindow
 from semtex.about import Ui_About
+from semtex.matrix import Ui_Matrix
 import semtex.const as const
 import os, shlex
 import subprocess as sp
@@ -11,7 +12,6 @@ class Main(QtGui.QMainWindow):
     """
     Main window for the SemTeX Equation Editor.
     """
-
     # Misc Variables
     equation_history = [] # Buffer for saved equation strings
 
@@ -37,6 +37,7 @@ class Main(QtGui.QMainWindow):
         self.ui.push_history.clicked.connect(self.saveToHistory)
         self.ui.push_equation.clicked.connect(self.copyToClipboard)
         self.ui.action_about.triggered.connect(self.showAbout)
+        self.ui.action_matrix.triggered.connect(self.showMatrix)
 
         # Keyboard shortcuts
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+Q"), self, QtGui.qApp.quit)
@@ -369,3 +370,36 @@ class Main(QtGui.QMainWindow):
 
             # Execute new dialog box
             dialog.exec_()
+
+    def showMatrix(self):
+        """
+        Creates a new window to create a Matrix.
+        """
+        # Create new dialog, setup using about.py
+        dialog = QtGui.QDialog()
+        self.matrix = Ui_Matrix()
+        self.matrix.setupUi(dialog)
+
+        # Connect event handler
+        self.matrix.buttonBox.accepted.connect(lambda : self.printMatrix(self.matrix.lineEdit.text()))
+
+        # Execute new dialog box
+        dialog.exec_()
+
+    def printMatrix(self,code):
+        """
+        Converts MATLAB style matrix code to LaTeX and adds to editor.
+
+        Event handler for 'Add Matrix' dialog.
+        """
+        # At the moment, only bmatrix type matrices are aloud
+        label = "bmatrix"
+
+        # Convert MATLAB style to LaTeX
+        code.replace('[',(r"\begin{%s}"+"\n") % label)
+        code.replace(',',(r" && "))
+        code.replace(';',(r"\\"+"\n"))
+        code.replace(']',("\n"+r"\end{%s}") % label)
+
+        # Append to editor
+        self.ui.text_equation.append(code)

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'layout.ui'
 #
-# Created: Thu Mar 22 19:11:41 2012
+# Created: Sun Apr 22 16:18:43 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,6 +17,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.setEnabled(True)
         MainWindow.resize(480, 246)
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
         self.centralwidget = QtGui.QWidget(MainWindow)
@@ -34,8 +35,8 @@ class Ui_MainWindow(object):
         self.text_equation.setHtml(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Enter LaTeX code here</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">Enter LaTeX code here</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.text_equation.setObjectName(_fromUtf8("text_equation"))
         self.verticalLayout.addWidget(self.text_equation)
         self.push_refresh = QtGui.QPushButton(self.layoutWidget)
@@ -59,7 +60,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.push_equation)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 480, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 480, 23))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menu_history = QtGui.QMenu(self.menubar)
         self.menu_history.setTitle(QtGui.QApplication.translate("MainWindow", "History", None, QtGui.QApplication.UnicodeUTF8))
@@ -74,7 +75,11 @@ class Ui_MainWindow(object):
         self.action_about = QtGui.QAction(MainWindow)
         self.action_about.setText(QtGui.QApplication.translate("MainWindow", "About SemTeX", None, QtGui.QApplication.UnicodeUTF8))
         self.action_about.setObjectName(_fromUtf8("action_about"))
+        self.action_matrix = QtGui.QAction(MainWindow)
+        self.action_matrix.setText(QtGui.QApplication.translate("MainWindow", "Enter Matrix", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_matrix.setObjectName(_fromUtf8("action_matrix"))
         self.menu_help.addAction(self.action_about)
+        self.menu_help.addAction(self.action_matrix)
         self.menubar.addAction(self.menu_history.menuAction())
         self.menubar.addAction(self.menu_help.menuAction())
 
