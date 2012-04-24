@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'layout.ui'
 #
-# Created: Sun Apr 22 16:18:43 2012
+# Created: Tue Apr 24 17:40:00 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -68,18 +68,29 @@ class Ui_MainWindow(object):
         self.menu_help = QtGui.QMenu(self.menubar)
         self.menu_help.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_help.setObjectName(_fromUtf8("menu_help"))
+        self.menuAdd = QtGui.QMenu(self.menubar)
+        self.menuAdd.setTitle(QtGui.QApplication.translate("MainWindow", "Add", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuAdd.setObjectName(_fromUtf8("menuAdd"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
         self.action_about = QtGui.QAction(MainWindow)
-        self.action_about.setText(QtGui.QApplication.translate("MainWindow", "About SemTeX", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_about.setText(QtGui.QApplication.translate("MainWindow", "About SemTeX...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_about.setObjectName(_fromUtf8("action_about"))
         self.action_matrix = QtGui.QAction(MainWindow)
         self.action_matrix.setText(QtGui.QApplication.translate("MainWindow", "Enter Matrix", None, QtGui.QApplication.UnicodeUTF8))
         self.action_matrix.setObjectName(_fromUtf8("action_matrix"))
+        self.action_add_matrix = QtGui.QAction(MainWindow)
+        self.action_add_matrix.setText(QtGui.QApplication.translate("MainWindow", "Matrix...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_add_matrix.setObjectName(_fromUtf8("action_add_matrix"))
+        self.action_add_frac = QtGui.QAction(MainWindow)
+        self.action_add_frac.setText(QtGui.QApplication.translate("MainWindow", "Fraction", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_add_frac.setObjectName(_fromUtf8("action_add_frac"))
         self.menu_help.addAction(self.action_about)
-        self.menu_help.addAction(self.action_matrix)
+        self.menuAdd.addAction(self.action_add_frac)
+        self.menuAdd.addAction(self.action_add_matrix)
+        self.menubar.addAction(self.menuAdd.menuAction())
         self.menubar.addAction(self.menu_history.menuAction())
         self.menubar.addAction(self.menu_help.menuAction())
 

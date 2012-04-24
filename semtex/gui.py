@@ -2,6 +2,7 @@ from PyQt4 import QtGui, QtCore
 from semtex.layout import Ui_MainWindow
 from semtex.about import Ui_About
 from semtex.matrix import Ui_Matrix
+from semtex.frac import Ui_Frac
 import semtex.const as const
 import os, shlex
 import subprocess as sp
@@ -37,7 +38,8 @@ class Main(QtGui.QMainWindow):
         self.ui.push_history.clicked.connect(self.saveToHistory)
         self.ui.push_equation.clicked.connect(self.copyToClipboard)
         self.ui.action_about.triggered.connect(self.showAbout)
-        self.ui.action_matrix.triggered.connect(self.showMatrix)
+        self.ui.action_add_matrix.triggered.connect(self.showMatrix)
+        self.ui.action_add_frac.triggered.connect(self.showFrac)
 
         # Keyboard shortcuts
         QtGui.QShortcut(QtGui.QKeySequence("Ctrl+Q"), self, QtGui.qApp.quit)
@@ -373,15 +375,15 @@ class Main(QtGui.QMainWindow):
 
     def showMatrix(self):
         """
-        Creates a new window to create a Matrix.
+        Creates a new window to quickly create a Matrix.
         """
         # Create new dialog, setup using about.py
         dialog = QtGui.QDialog()
-        self.matrix = Ui_Matrix()
-        self.matrix.setupUi(dialog)
+        matrix = Ui_Matrix()
+        matrix.setupUi(dialog)
 
         # Connect event handler
-        self.matrix.buttonBox.accepted.connect(lambda : self.printMatrix(self.matrix.lineEdit.text(),self.matrix.comboBox.currentText()))
+        matrix.buttonBox.accepted.connect(lambda : self.printMatrix(matrix.lineEdit.text(),matrix.comboBox.currentText()))
 
         # Execute new dialog box
         dialog.exec_()
@@ -390,7 +392,7 @@ class Main(QtGui.QMainWindow):
         """
         Converts MATLAB style matrix code to LaTeX and adds to editor.
 
-        Event handler for 'Add Matrix' dialog.
+        Event handler for 'Add>Matrix' dialog.
         """
         # Choose Matrix style
         if style == u'[]':
@@ -407,6 +409,33 @@ class Main(QtGui.QMainWindow):
         code.replace(',',(r" && "))
         code.replace(';',(r"\\"+"\n"))
         code.replace(']',("\n"+r"\end{%s}") % label)
+
+        # Append to editor
+        self.ui.text_equation.append(code)
+
+    def showFrac(self):
+        """
+        Creates a new window to quickly create a Fraction.
+        """
+        # Create new dialog, setup using about.py
+        dialog = QtGui.QDialog()
+        frac = Ui_Frac()
+        frac.setupUi(dialog)
+
+        # Connect event handler
+        frac.buttonBox.accepted.connect(lambda : self.printFrac(frac.line_num.text(),frac.line_den.text()))
+
+        # Execute new dialog box
+        dialog.exec_()
+
+    def printFrac(self,num,den):
+        """
+        Wraps numerator and denominator snippets of LaTeX code within a \frac tag.
+
+        Event handler for 'Add>Fraction' dialog.
+        """
+        # Wrap LaTeX in \frac tag
+        code = r"\frac{%s}{%s}" % (num,den)
 
         # Append to editor
         self.ui.text_equation.append(code)

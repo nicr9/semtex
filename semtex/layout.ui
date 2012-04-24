@@ -114,20 +114,37 @@ p, li { white-space: pre-wrap; }
      <string>Help</string>
     </property>
     <addaction name="action_about"/>
-    <addaction name="action_matrix"/>
    </widget>
+   <widget class="QMenu" name="menuAdd">
+    <property name="title">
+     <string>Add</string>
+    </property>
+    <addaction name="action_add_frac"/>
+    <addaction name="action_add_matrix"/>
+   </widget>
+   <addaction name="menuAdd"/>
    <addaction name="menu_history"/>
    <addaction name="menu_help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_about">
    <property name="text">
-    <string>About SemTeX</string>
+    <string>About SemTeX...</string>
    </property>
   </action>
   <action name="action_matrix">
    <property name="text">
     <string>Enter Matrix</string>
+   </property>
+  </action>
+  <action name="action_add_matrix">
+   <property name="text">
+    <string>Matrix...</string>
+   </property>
+  </action>
+  <action name="action_add_frac">
+   <property name="text">
+    <string>Fraction</string>
    </property>
   </action>
  </widget>
