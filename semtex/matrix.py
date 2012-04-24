@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'matrix.ui'
 #
-# Created: Sun Apr 22 15:14:28 2012
+# Created: Tue Apr 24 17:27:35 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -20,13 +20,13 @@ class Ui_Matrix(object):
         Matrix.resize(307, 160)
         Matrix.setWindowTitle(QtGui.QApplication.translate("Matrix", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
         self.widget = QtGui.QWidget(Matrix)
-        self.widget.setGeometry(QtCore.QRect(0, 10, 296, 139))
+        self.widget.setGeometry(QtCore.QRect(1, 11, 296, 139))
         self.widget.setObjectName(_fromUtf8("widget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.widget)
         self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label = QtGui.QLabel(self.widget)
-        self.label.setText(QtGui.QApplication.translate("Matrix", "Enter matrix in matlab format: e.g. [1 2 3;4 5 6;7 8 9]", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("Matrix", "Enter matrix in matlab format: e.g. [1,2,3;4,5,6;7,8,9]", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setObjectName(_fromUtf8("label"))
         self.verticalLayout.addWidget(self.label)
         self.lineEdit = QtGui.QLineEdit(self.widget)
@@ -40,7 +40,13 @@ class Ui_Matrix(object):
         self.comboBox = QtGui.QComboBox(self.widget)
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         self.comboBox.addItem(_fromUtf8(""))
-        self.comboBox.setItemText(0, QtGui.QApplication.translate("Matrix", "Big Square", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox.setItemText(0, QtGui.QApplication.translate("Matrix", "[]", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.setItemText(1, QtGui.QApplication.translate("Matrix", "{}", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.setItemText(2, QtGui.QApplication.translate("Matrix", "()", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.setItemText(3, QtGui.QApplication.translate("Matrix", "||", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout.addWidget(self.comboBox)
         self.buttonBox = QtGui.QDialogButtonBox(self.widget)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -49,8 +55,8 @@ class Ui_Matrix(object):
         self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(Matrix)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), Matrix.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), Matrix.reject)
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), Matrix.accept)
         QtCore.QMetaObject.connectSlotsByName(Matrix)
 
     def retranslateUi(self, Matrix):

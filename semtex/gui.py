@@ -381,19 +381,26 @@ class Main(QtGui.QMainWindow):
         self.matrix.setupUi(dialog)
 
         # Connect event handler
-        self.matrix.buttonBox.accepted.connect(lambda : self.printMatrix(self.matrix.lineEdit.text()))
+        self.matrix.buttonBox.accepted.connect(lambda : self.printMatrix(self.matrix.lineEdit.text(),self.matrix.comboBox.currentText()))
 
         # Execute new dialog box
         dialog.exec_()
 
-    def printMatrix(self,code):
+    def printMatrix(self,code,style):
         """
         Converts MATLAB style matrix code to LaTeX and adds to editor.
 
         Event handler for 'Add Matrix' dialog.
         """
-        # At the moment, only bmatrix type matrices are aloud
-        label = "bmatrix"
+        # Choose Matrix style
+        if style == u'[]':
+            label = 'bmatrix'
+        if style == u'{}':
+            label = 'Bmatrix'
+        if style == u'()':
+            label = 'pmatrix'
+        if style == u'||':
+            label = 'vmatrix'
 
         # Convert MATLAB style to LaTeX
         code.replace('[',(r"\begin{%s}"+"\n") % label)
