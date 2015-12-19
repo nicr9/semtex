@@ -22,6 +22,10 @@ class Main(QtGui.QMainWindow):
         """
         super(Main,self).__init__()
 
+        # Make sure cache exists
+        if not os.path.isdir(const.CACHE_PATH):
+            os.mkdir(const.CACHE_PATH)
+
         # Ensure system requirements are met
         self.checkDependancies()
 

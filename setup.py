@@ -8,4 +8,4 @@ setup(
 	description = "SemTeX: Equations Made using laTEX",
 	scripts = ["bin/semtex"],
 	packages = ['semtex'],
-	package_data = {'semtex':['cache/*','res/*']})
+	package_data = {'semtex':['res/*']})
