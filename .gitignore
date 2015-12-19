@@ -2,3 +2,5 @@
 .pydevproject
 *.pyc
 /.idea/
+build/
+*/sw?
