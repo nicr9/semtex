@@ -1,18 +1,19 @@
-SemTeX: Equations Made using LaTeX
-==================================
+# SemTeX: Equations Made using LaTeX
+
 Created by Nic Roland.
 
-Equation editor for Linux that takes LaTeX code and copys the resulting png to your clipboard.
+Equation editor for Linux that takes LaTeX code and copies the resulting png to
+your clipboard.
 
-Dependancies
-============
+## Dependancies
+
 Python 2.7.x - www.python.org
 PyQt4 - http://www.riverbankcomputing.co.uk/software/pyqt/download
 LaTeX - www.latex-project.org
 dvipng - www.sourceforge.net/projects/dvipng/
 
-How to
-======
+## How to
+
 * Make sure you're using python 2.7 or greater.
 * Install dependencies (this will take a long time, pyqt4 takes ages).
     - sudo apt-get install texlive-full dvipng python-qt4
@@ -20,8 +21,8 @@ How to
 * Enter some LaTeX code and press refresh to render the code.
 * Click on the rendered image to copy it to your clipboard.
 
-Upcoming Features
-=================
+## Upcoming Features
+
 * Package SemTeX up with dependencies to make installable
 * Auto create ~/.semtex folder to store cache/ and res/
 * LaTeX Cheet Sheet
