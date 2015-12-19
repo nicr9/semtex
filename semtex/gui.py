@@ -16,11 +16,11 @@ class Main(QtGui.QMainWindow):
     # Misc Variables
     equation_history = [] # Buffer for saved equation strings
 
-    def __init__(self,app):
+    def __init__(self, app):
         """
         Setup GUI layout, connect event handlers.
         """
-        super(Main,self).__init__()
+        super(Main, self).__init__()
 
         # Make sure cache exists
         if not os.path.isdir(const.CACHE_PATH):
@@ -35,7 +35,7 @@ class Main(QtGui.QMainWindow):
 
         # Change title, position
         self.setWindowTitle('SemTeX')
-        self.move(200,200)
+        self.move(200, 200)
 
         # Connect event handlers
         self.ui.push_refresh.clicked.connect(self.refresh)
@@ -103,7 +103,7 @@ class Main(QtGui.QMainWindow):
             # Create menubar action
             action = QtGui.QAction(self)
             action.setText(row)
-            QtCore.QObject.connect(action,QtCore.SIGNAL("triggered()"),lambda x=(row_number+1):self.setFromHistory(x))
+            QtCore.QObject.connect(action, QtCore.SIGNAL("triggered()"), lambda x=(row_number+1): self.setFromHistory(x))
             self.ui.menu_history.addAction(action)
 
         # Add separator
@@ -120,7 +120,7 @@ class Main(QtGui.QMainWindow):
         self.equation_history = []
 
         # Update history
-        with open(const.HISTORY_PATH,'w'):
+        with open(const.HISTORY_PATH, 'w'):
             pass
 
         self.refreshHistory()
@@ -133,7 +133,7 @@ class Main(QtGui.QMainWindow):
         """
         try:
             # Open/create history file
-            with open(const.HISTORY_PATH,'r') as hist_file:
+            with open(const.HISTORY_PATH, 'r') as hist_file:
                 # Clear previous history
                 self.equation_history = []
 
@@ -148,7 +148,7 @@ class Main(QtGui.QMainWindow):
             self.createHistory()
 
     def createHistory(self):
-        with open(const.HISTORY_PATH,'w'):
+        with open(const.HISTORY_PATH, 'w'):
             pass
 
     def setFromHistory(self, index):
@@ -191,9 +191,9 @@ class Main(QtGui.QMainWindow):
         """
         try:
             # Open templates and output file
-            with open(const.HEADER_PATH,'r') as head,\
-                    open(const.FOOTER_PATH,'r') as foot,\
-                    open(const.LATEX_CODE_PATH,'w') as outp: # TODO: Check is this PEP 8
+            with open(const.HEADER_PATH, 'r') as head,\
+                    open(const.FOOTER_PATH, 'r') as foot,\
+                    open(const.LATEX_CODE_PATH, 'w') as outp:
                 # Concatenate LaTeX code from templates and input
                 eq = head.read() + inp + foot.read()
 
@@ -209,12 +209,12 @@ class Main(QtGui.QMainWindow):
         """
         try:
             # Open file to store output from latex command
-            with open(const.STDOUT_PATH,'w') as stdout_file:
+            with open(const.STDOUT_PATH, 'w') as stdout_file:
                 # latex command as string
-                cmd = 'latex -halt-on-error -output-directory=%s %s' % (const.CACHE_PATH,const.LATEX_CODE_PATH)
+                cmd = 'latex -halt-on-error -output-directory=%s %s' % (const.CACHE_PATH, const.LATEX_CODE_PATH)
 
                 # Run command in separate process
-                latex_call = sp.call(shlex.split(cmd), stdout = stdout_file)
+                latex_call = sp.call(shlex.split(cmd), stdout=stdout_file)
 
                 # If latex returns a 1, raise exception
                 if latex_call:
@@ -224,18 +224,18 @@ class Main(QtGui.QMainWindow):
         except Exception:
             self.status('LaTeX error!')
 
-    def convertPng(self, bg = 'rgb 1.0 1.0 1.0', outp = const.PNG_CLIP_PATH):
+    def convertPng(self, bg='rgb 1.0 1.0 1.0', outp=const.PNG_CLIP_PATH):
         """
         Using dvipng command line utility, creates a .png file from the .dvi file generated earlier by latex.
         """
         try:
             # Open file to store output from dvipng command
-            with open(const.STDOUT_PATH,'w') as stdout_file:
+            with open(const.STDOUT_PATH, 'w') as stdout_file:
                 # dvipng command as string
                 cmd = 'dvipng -T tight -x 1200 -z 9 -bg %s -o %s %s' % (bg, outp, const.LATEX_OUTP_PATH)
 
                 # Run command in separate process
-                dvipng_call = sp.call(shlex.split(cmd), stdout = stdout_file)
+                dvipng_call = sp.call(shlex.split(cmd), stdout=stdout_file)
 
                 # If dvipng returns a 1, raise exception
                 if dvipng_call:
@@ -252,14 +252,14 @@ class Main(QtGui.QMainWindow):
         """
         try:
             # Open file to store output from either command
-            with open(const.STDOUT_PATH,'w') as outp_file:
+            with open(const.STDOUT_PATH, 'w') as outp_file:
                 # Commands as strings
                 cmd_latex = 'which latex'
                 cmd_dvipng = 'which dvipng'
 
                 # Run commands in separate processes
-                latex_check = sp.call(shlex.split(cmd_latex), stdout = outp_file)
-                dvipng_check = sp.call(shlex.split(cmd_dvipng), stdout = outp_file)
+                latex_check = sp.call(shlex.split(cmd_latex), stdout=outp_file)
+                dvipng_check = sp.call(shlex.split(cmd_dvipng), stdout=outp_file)
 
                 # If either is missing...
                 if latex_check or dvipng_check:
@@ -284,7 +284,7 @@ class Main(QtGui.QMainWindow):
         """
         try:
             # Check for any files called temp, create list
-            file_list = sp.check_output('ls %s' % os.path.join(const.CACHE_PATH,'temp.*'), shell = True)
+            file_list = sp.check_output('ls %s' % os.path.join(const.CACHE_PATH, 'temp.*'), shell=True)
             file_list = file_list.strip().split('\n')
 
             # Find a temp.png, remove it from list
@@ -311,7 +311,7 @@ class Main(QtGui.QMainWindow):
         icon = QtGui.QIcon(temp_path)
         # Display in equation editor
         self.ui.push_equation.setIcon(icon)
-        self.ui.push_equation.setIconSize(QtCore.QSize(190,190))
+        self.ui.push_equation.setIconSize(QtCore.QSize(190, 190))
 
     def saveToHistory(self):
         """
@@ -331,7 +331,7 @@ class Main(QtGui.QMainWindow):
             hist = [z+'\n' for z in self.equation_history[-const.HISTORY_LENGTH:]]
 
             # Update history
-            with open(const.HISTORY_PATH,'w') as hist_file:
+            with open(const.HISTORY_PATH, 'w') as hist_file:
                 for row in hist:
                     hist_file.write(row)
 
@@ -351,12 +351,12 @@ class Main(QtGui.QMainWindow):
         """
         # Cast png to QPixmap, add to clipboard
         if self.getInput():
-            self.clipboard.setPixmap(QtGui.QPixmap(const.PNG_CLIP_PATH), mode = self.clipboard.Clipboard)
+            self.clipboard.setPixmap(QtGui.QPixmap(const.PNG_CLIP_PATH), mode=self.clipboard.Clipboard)
             self.status('Copied to clipboard')
         else:
             self.status('Nothing to copy to clipboard')
 
-    def status(self,message=None):
+    def status(self, message=None):
         if message is None:
             self.ui.statusbar.clearMessage()
         else:
@@ -387,12 +387,12 @@ class Main(QtGui.QMainWindow):
         matrix.setupUi(dialog)
 
         # Connect event handler
-        matrix.buttonBox.accepted.connect(lambda : self.printMatrix(matrix.lineEdit.text(),matrix.comboBox.currentText()))
+        matrix.buttonBox.accepted.connect(lambda: self.printMatrix(matrix.lineEdit.text(), matrix.comboBox.currentText()))
 
         # Execute new dialog box
         dialog.exec_()
 
-    def printMatrix(self,code,style):
+    def printMatrix(self, code, style):
         """
         Converts MATLAB style matrix code to LaTeX and adds to editor.
 
@@ -409,10 +409,10 @@ class Main(QtGui.QMainWindow):
             label = 'vmatrix'
 
         # Convert MATLAB style to LaTeX
-        code.replace('[',(r"\begin{%s}"+"\n") % label)
-        code.replace(',',(r" && "))
-        code.replace(';',(r"\\"+"\n"))
-        code.replace(']',("\n"+r"\end{%s}") % label)
+        code.replace('[', (r"\begin{%s}"+"\n") % label)
+        code.replace(',', (r" && "))
+        code.replace(';', (r"\\"+"\n"))
+        code.replace(']', ("\n"+r"\end{%s}") % label)
 
         # Append to editor
         self.ui.text_equation.append(code)
@@ -427,19 +427,19 @@ class Main(QtGui.QMainWindow):
         frac.setupUi(dialog)
 
         # Connect event handler
-        frac.buttonBox.accepted.connect(lambda : self.printFrac(frac.line_num.text(),frac.line_den.text()))
+        frac.buttonBox.accepted.connect(lambda: self.printFrac(frac.line_num.text(), frac.line_den.text()))
 
         # Execute new dialog box
         dialog.exec_()
 
-    def printFrac(self,num,den):
+    def printFrac(self, num, den):
         """
         Wraps numerator and denominator snippets of LaTeX code within a \frac tag.
 
         Event handler for 'Add>Fraction' dialog.
         """
         # Wrap LaTeX in \frac tag
-        code = r"\frac{%s}{%s}" % (num,den)
+        code = r"\frac{%s}{%s}" % (num, den)
 
         # Append to editor
         self.ui.text_equation.append(code)
